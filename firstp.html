@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="jQuery v3.2.1.min.js"></script>
+    <style type="text/css">
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            max-width: 1200px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        #form-section {
+            width: 40%;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input[type="button"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #115d23;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background-color: #218838;
+        }
+
+        #table-section {
+            width: 50%;
+        }
+
+        table {
+            width: 100%;
+             border-collapse: collapse; 
+            margin-top: 10px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        } 
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            #container {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            #form-section, #table-section {
+                width: 100%;
+            }
+
+            input[type="text"], input[type="button"] {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+
+        </style>
+        </head>
+       <body>
+
+        <body>
+            <div id="container">
+                <div id="form-section">
+                    <h2>Registration Form</h2>
+                    <input type="text" id="fname" placeholder="First Name" />
+                    <input type="text" id="lname" placeholder="Last Name" />
+                    <input type="text" id="email" placeholder="Email" />
+                    <input type="text" id="phone" placeholder="Phone" />
+                    <input type="button" id="add" value="Add New" />
+                </div>
+        
+                <div id="table-section">
+                    <table id="tbl">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <script type="text/javascript">
+                var firstDB=window.firstDB|| window.mozfirstDB||
+                window.webkitfirstDB||window.msfirstDB;
+                var database;
+                var currentEdit=null;
+                $(document).ready(function(){
+                    var sendreq=firstDB.open("Info",1);
+                    sendreq.onupradeneeded=function(e){
+                        database=e.target.result;
+                        var store=database.createObjectStore("Info",{
+                            keypath: "id",
+                            autoIncrement: true
+                        });
+                        console.log(store);
+                    }
+                    sendreq.onsuccess=function(e){
+                        database=e.target.result;
+                        console.log(db);
+                        readAll();
+                        $("#add").click(function(){
+                            if ($("#fname").val() != "" && $("#lname").val() != "" &&
+                        $("#email").val() != "" && $("#phone").val() != "") {
+                        var tx = db.transaction(["Info"], "readwrite");
+                        if (currentEdit == null) {
+                            var req = tx.objectStore("Info").add({
+                                FirstName: $("#fname").val(),
+                                LastName: $("#lname").val(),
+                                Email: $("#email").val(),
+                                Phone: $("#phone").val()
+                            });
+                            req.onsuccess = function (e) {
+                                console.log("Added data.....");
+                                readAll();
+                            }
+                            $("#fname").val("");
+                            $("#lname").val("");
+                            $("#email").val("");
+                            $("#phone").val("");
+                            $("#fname").focus();
+                        }
+                        else {
+                            var req = tx.objectStore("Info").put({
+                                FirstName: $("#fname").val(),
+                                LastName: $("#lname").val(),
+                                Email: $("#email").val(),
+                                Phone: $("#phone").val(),
+                                id: currentEdit.id
+                            });
+                            req.onsuccess = function (e) {
+                                console.log("Added data.....");
+                                readAll();
+                            }
+                            $("#fname").val("");
+                            $("#lname").val("");
+                            $("#email").val("");
+                            $("#phone").val("");
+                            $("#fname").focus();
+                        }
+                        $("#add").val("Add New"); currentEdit = null;
+                    }
+                    else {
+                        alert("Please fill up all field");
+                    }
+                })
+            }
+        })
+                        
+        
+
+
+
+
+
+
+
+
+
+
+        </script>
+       </body>
